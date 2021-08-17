@@ -1,0 +1,13 @@
+name: fastai_example
+
+docker_env: mlflow-fastai
+
+entry_points:
+  main:
+    parameters:
+      lr: {type: float, default: 0.01}
+      epochs: {type: int, default: 5}
+    command: |
+        python train.py \
+            --lr {lr} \
+            --epochs {epochs}
