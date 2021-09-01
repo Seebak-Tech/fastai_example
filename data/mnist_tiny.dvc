@@ -1,0 +1,5 @@
+outs:
+- md5: 20f9c6f4122f3c57b3aecc9cc701cc5f.dir
+  size: 407129
+  nfiles: 1430
+  path: mnist_tiny
