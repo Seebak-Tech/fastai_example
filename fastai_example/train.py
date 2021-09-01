@@ -10,7 +10,7 @@
 import argparse
 import fastai.vision as vis
 import mlflow.fastai
-
+import dvc.api
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Fastai example")
@@ -34,7 +34,8 @@ def main():
     args = parse_args()
 
     # Download and untar the MNIST data set
-    path = vis.untar_data(vis.URLs.MNIST_TINY)
+    #path = vis.untar_data(vis.URLs.MNIST_TINY)
+    path = '/workspace/fastai_example/data/mnist_tiny'
 
     # Prepare, transform, and normalize the data
     data = vis.ImageDataBunch.from_folder(path, ds_tfms=(vis.rand_pad(2, 28), []), bs=64)
