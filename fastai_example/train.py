@@ -35,7 +35,7 @@ def main():
 
     # Download and untar the MNIST data set
     #path = vis.untar_data(vis.URLs.MNIST_TINY)
-    path = '/workspace/fastai_example/data/mnist_tiny'
+    path = './data/mnist_tiny'
 
     # Prepare, transform, and normalize the data
     data = vis.ImageDataBunch.from_folder(path, ds_tfms=(vis.rand_pad(2, 28), []), bs=64)
