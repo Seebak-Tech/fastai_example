@@ -1,7 +1,7 @@
 name: fastai_example
 
 docker_env: 
-  image: mlflow-fastai
+  image: seebaktec/mlflow-fastai
 
 entry_points:
   main:
