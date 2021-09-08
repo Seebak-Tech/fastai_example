@@ -2,6 +2,7 @@ name: fastai_example
 
 docker_env: 
   image: seebaktec/mlflow-fastai
+  volumes: ["WORKSPACE/fastai_example/data/mnist_tiny:/workspace/fastai_example/data/mnist_tiny"] 
   environment: ["WORKSPACE"] 
 
 entry_points:
