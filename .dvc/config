@@ -1,4 +1,4 @@
 [core]
-    remote = storage
-['remote "storage"']
-    url = gdrive://18orzbC-uggdfYkiIvPBCWm390uCtll0E
+    remote = aws-remote
+['remote "aws-remote"']
+    url = s3://dvc-bucket-630835944865

@@ -8,8 +8,7 @@ authors = ["Luis Díaz <luigirdf@gmail.com>"]
 python = "^3.7"
 fastai = "^1.0.61"
 mlflow = "^1.19.0"
-dvc = {extras = ["gdrive"], version = "^2.6.4"}
-boto3 = "^1.18.33"
+dvc = {extras = ["s3"], version = "^2.7.3"}
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
