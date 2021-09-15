@@ -1,9 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 #
 # This short example is based on the fastai GitHub
 # Repository of vision examples
@@ -15,6 +12,7 @@ import fastai.vision as vis
 import mlflow.fastai
 import dvc.api
 import tarfile
+import io
 
 
 def parse_args():
@@ -34,33 +32,25 @@ def parse_args():
     return parser.parse_args()
 
 
-def extract(extract_path='~/.fastai/prueba'):
-    tar = tarfile.open(
-        mode='r',
-        fileobj=dvc.api.read(
+def extract(extract_path='./data_test'):
+    fobj = io.BytesIO(
+        dvc.api.read(
             path='data/mnist_tiny.tgz',
             repo='https://github.com/Seebak-Tech/fastai_example.git',
             remote='aws-remote',
             mode='rb'
         )
     )
-    for item in tar:
-        tar.extractall(extract_path)
-        #  if item.name.find(".tgz") != -1 or item.name.find(".tar") != -1:
-            #  extract(item.name, "./" + item.name[:item.name.rfind('/')])
+
+    tar = tarfile.open(
+        mode='r:gz',
+        fileobj=fobj
+    )
+    #  for item in tar:
+    tar.extractall(extract_path)
 
 
 def main():
-
-    # Open file
-    #  tar = tarfile.open(
-        #  mode='r',
-        #  fileobj=dvc.api.read(
-            #  path='data/mnist_tiny.tgz',
-            #  repo='https://github.com/Seebak-Tech/fastai_example',
-            #  mode='rb'
-        #  )
-    #  )
     extract()
 
 
