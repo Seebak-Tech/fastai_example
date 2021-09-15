@@ -1,0 +1,4 @@
+outs:
+- md5: 56143e8f24db90d925d82a5a74141875
+  size: 342207
+  path: mnist_tiny.tgz
