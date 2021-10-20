@@ -11,7 +11,9 @@ import argparse
 import fastai.vision as vis
 import mlflow.fastai
 import dvc.api
-import os
+import tarfile
+import io
+
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Fastai example")
@@ -30,15 +32,31 @@ def parse_args():
     return parser.parse_args()
 
 
+def extract(extract_path='./data_test'):
+    fobj = io.BytesIO(
+        dvc.api.read(
+            path='data/mnist_tiny.tgz',
+            repo='https://github.com/Seebak-Tech/fastai_example.git',
+            remote='aws-remote',
+            mode='rb'
+        )
+    )
+
+    tar = tarfile.open(
+        mode='r:gz',
+        fileobj=fobj
+    )
+    #  for item in tar:
+    tar.extractall(extract_path)
+
+
 def main():
     # Parse command-line arguments
     args = parse_args()
 
     # Download and untar the MNIST data set
-    #path = vis.untar_data(vis.URLs.MNIST_TINY)
-    WORKSPACE = os.getenv('WORKSPACE')
-    path = WORKSPACE+'/fastai_example/data/mnist_tiny'
-    print ("Variable enviroment PATH ")
+    path = '/workspace/fastai_example/data_test/mnist_tiny'
+    extract()
 
     # Prepare, transform, and normalize the data
     data = vis.ImageDataBunch.from_folder(path, ds_tfms=(vis.rand_pad(2, 28), []), bs=64)
