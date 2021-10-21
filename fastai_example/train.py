@@ -1,7 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
-#
 # This short example is based on the fastai GitHub
 # Repository of vision examples
 # https://github.com/fastai/fastai/blob/master/examples/vision.ipynb
@@ -12,7 +8,9 @@ import fastai.vision as vis
 import mlflow.fastai
 import dvc.api
 import tarfile
+import boto3
 import io
+import os
 
 
 def parse_args():
@@ -21,13 +19,14 @@ def parse_args():
         "--lr",
         type=float,
         default=0.01,
-        help="learning rate to update step size at each step (default: 0.01)",
+        help="learning rate to update step size at each step (default: 0.01)"
     )
     parser.add_argument(
         "--epochs",
         type=int,
         default=5,
-        help="number of epochs (default: 5). Note it takes about 1 min per epoch",
+        help="number of epochs (default: 5). " \
+             "Note it takes about 1 min per epoch"
     )
     return parser.parse_args()
 
@@ -50,8 +49,31 @@ def extract(extract_path='./data_test'):
     tar.extractall(extract_path)
 
 
+def set_session_token():
+    # create an STS client object that represents a live connection to the 
+    # STS service
+    sts_client = boto3.client('sts')
+
+    # Call the assume_role method of the STSConnection object and pass the role
+    # ARN and a role session name.
+    assumed_role_object = sts_client.assume_role(
+        RoleArn=os.environ.get('AWS_ROLE_ARN'),
+        RoleSessionName="AssumeRoleSession1"
+    )
+
+    # From the response that contains the assumed role, get the temporary 
+    # credentials that can be used to make subsequent API calls
+    credentials = assumed_role_object['Credentials']
+
+    # Use the temporary credentials that AssumeRole returns to make a 
+    # connection to Amazon S3  
+    os.environ['AWS_SESSION_TOKEN'] = credentials['SessionToken']
+
+
 def main():
-    # Parse command-line arguments
+    # Set Session token
+    set_session_token()
+    # Parse command-line ArgumentParser
     args = parse_args()
 
     # Download and untar the MNIST data set
@@ -59,7 +81,11 @@ def main():
     extract()
 
     # Prepare, transform, and normalize the data
-    data = vis.ImageDataBunch.from_folder(path, ds_tfms=(vis.rand_pad(2, 28), []), bs=64)
+    data = vis.ImageDataBunch.from_folder(
+        path,
+        ds_tfms=(vis.rand_pad(2, 28), []),
+        bs=64
+    )
     data.normalize(vis.imagenet_stats)
 
     # Train and fit the Learner model

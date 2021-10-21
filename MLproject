@@ -2,6 +2,7 @@ name: fastai_example
 
 docker_env: 
   image: seebaktec/mlflow-fastai
+  environment: [["AWS_ROLE_ARN", "arn:aws:iam::630835944865:role/AdminFullAccess"], "AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY"]
 
 entry_points:
   main:
