@@ -13,6 +13,9 @@ import io
 import os
 
 
+MLFLOW_PROJECT = os.environ.get('MLFLOW_PROJECT')
+
+
 def parse_args():
     parser = argparse.ArgumentParser(description="Fastai example")
     parser.add_argument(
@@ -25,13 +28,13 @@ def parse_args():
         "--epochs",
         type=int,
         default=5,
-        help="number of epochs (default: 5). " \
+        help="number of epochs (default: 5). "
              "Note it takes about 1 min per epoch"
     )
     return parser.parse_args()
 
 
-def extract(extract_path='./data_test'):
+def extract(extract_path=MLFLOW_PROJECT+'/data_test'):
     fobj = io.BytesIO(
         dvc.api.read(
             path='data/mnist_tiny.tgz',
@@ -67,17 +70,31 @@ def set_session_token():
 
     # Use the temporary credentials that AssumeRole returns to make a 
     # connection to Amazon S3  
+    os.environ['AWS_ACCESS_KEY_ID'] = credentials['AccessKeyId']
+    os.environ['AWS_SECRET_ACCESS_KEY_ID'] = credentials['SecretAccessKey']
     os.environ['AWS_SESSION_TOKEN'] = credentials['SessionToken']
+    os.environ['AWS_DEFAULT_REGION'] = "us-west-2"
+
+    s3_resource = boto3.resource(
+        's3',
+        aws_access_key_id=credentials['AccessKeyId'],
+        aws_secret_access_key=credentials['SecretAccessKey'],
+        aws_session_token=credentials['SessionToken'],
+    )
+    # Use the Amazon S3 resource object that is now configured with the
+    # credentials to access your S3 buckets.
+    for bucket in s3_resource.buckets.all():
+        print(bucket.name)
 
 
 def main():
     # Set Session token
-    set_session_token()
+    # set_session_token()
     # Parse command-line ArgumentParser
     args = parse_args()
 
     # Download and untar the MNIST data set
-    path = '/workspace/fastai_example/data_test/mnist_tiny'
+    path = MLFLOW_PROJECT + '/data_test/mnist_tiny'
     extract()
 
     # Prepare, transform, and normalize the data
