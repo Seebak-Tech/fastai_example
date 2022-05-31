@@ -1,4 +1,4 @@
 [core]
     remote = aws-remote
 ['remote "aws-remote"']
-    url = s3://dvc-bucket-630835944865
+    url = s3://dvc-517750025209-us-west-2/dvcstore
