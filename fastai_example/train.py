@@ -4,7 +4,7 @@
 # Modified here to show mlflow.fastai.autolog() capabilities
 #
 import argparse
-import fastai.vision as vis
+from fastai.vision.all import *
 import mlflow.fastai
 import dvc.api
 import tarfile
@@ -98,15 +98,16 @@ def main():
     extract()
 
     # Prepare, transform, and normalize the data
-    data = vis.ImageDataBunch.from_folder(
+    data = ImageDataLoaders.from_folder(
         path,
-        ds_tfms=(vis.rand_pad(2, 28), []),
-        bs=64
+        valid='valid', 
+        item_tfms=RandomResizedCrop(128, min_scale=0.35),
+        batch_tfms=Normalize.from_stats(*imagenet_stats)
     )
-    data.normalize(vis.imagenet_stats)
+    #  data.normalize(imagenet_stats)
 
     # Train and fit the Learner model
-    learn = vis.cnn_learner(data, vis.models.resnet18, metrics=vis.accuracy)
+    learn = vision_learner(data, models.resnet18, metrics=accuracy)
 
     # Enable auto logging
     mlflow.fastai.autolog()
