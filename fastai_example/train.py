@@ -110,7 +110,7 @@ def main():
     learn = vision_learner(data, models.resnet18, metrics=accuracy)
 
     # Enable auto logging
-    mlflow.fastai.autolog()
+    mlflow.fastai.autolog(silent=True)
 
     # Start MLflow session
     with mlflow.start_run():
