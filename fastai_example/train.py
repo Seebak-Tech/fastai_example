@@ -10,8 +10,11 @@ import dvc.api
 import tarfile
 import boto3
 import io
+import numpy as np
 import os
-
+from mlflow.models.signature import ModelSignature
+from mlflow.types.schema import Schema, TensorSpec, ColSpec
+from mlflow.types import DataType
 
 MLFLOW_PROJECT = os.environ.get('MLFLOW_PROJECT')
 
@@ -100,9 +103,9 @@ def main():
     # Prepare, transform, and normalize the data
     data = ImageDataLoaders.from_folder(
         path,
-        valid='valid', 
-        item_tfms=RandomResizedCrop(128, min_scale=0.35),
-        batch_tfms=Normalize.from_stats(*imagenet_stats)
+        train='train',
+        valid='valid',
+        num_workers=0
     )
     #  data.normalize(imagenet_stats)
 
@@ -110,12 +113,35 @@ def main():
     learn = vision_learner(data, models.resnet18, metrics=accuracy)
 
     # Enable auto logging
-    mlflow.fastai.autolog(silent=True)
+    mlflow.fastai.autolog(log_models=False)
 
     # Start MLflow session
     with mlflow.start_run():
         # Train and fit with default or supplied command line arguments
         learn.fit(args.epochs, args.lr)
+
+        input_schema = Schema(
+            [
+                TensorSpec(np.dtype(np.uint8), (-1, 28, 28, 3)),
+            ]
+        )
+        output_schema = Schema(
+            [
+                ColSpec(DataType.integer, "class"),
+                ColSpec(DataType.string, "label"),
+            ]
+        )
+        signature = ModelSignature(inputs=input_schema, outputs=output_schema)
+
+        saved_model = "/tmp/.fastai/mnist/model.fastai"
+        learn.export(saved_model)
+        model_info = mlflow.pyfunc.log_model(
+            "classifier",
+            data_path=saved_model,
+            code_path=["./fastai_example/fastai_classifier_module.py"],
+            loader_module="fastai_classifier_module",
+            signature=signature
+        )
 
 
 if __name__ == "__main__":
