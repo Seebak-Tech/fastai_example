@@ -113,7 +113,7 @@ def main():
     learn = vision_learner(data, models.resnet18, metrics=accuracy)
 
     # Enable auto logging
-    mlflow.fastai.autolog(log_models=False)
+    mlflow.fastai.autolog(log_models=False, silent=True)
 
     # Start MLflow session
     with mlflow.start_run():
@@ -133,7 +133,7 @@ def main():
         )
         signature = ModelSignature(inputs=input_schema, outputs=output_schema)
 
-        saved_model = "/tmp/.fastai/mnist/model.fastai"
+        saved_model = path + '/model.fastai'
         learn.export(saved_model)
         model_info = mlflow.pyfunc.log_model(
             "classifier",
